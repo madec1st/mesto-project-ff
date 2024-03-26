@@ -4,9 +4,12 @@
 // @todo: Функция удаления карточки
 // @todo: Вывести карточки на страницу
 
+import '../pages/index.css';
+import { initialCards } from './cards.js';
+
 const cardTemplate = document.querySelector('#card-template').content;
 
-createCard = (cardItem, deleteCard) => {
+const createCard = (cardItem, deleteCard) => {
   const card = cardTemplate.querySelector('.card').cloneNode(true);
   card.querySelector('.card__title').textContent = cardItem.name;
   card.querySelector('.card__image').src = cardItem.link;
