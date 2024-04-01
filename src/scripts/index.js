@@ -25,9 +25,6 @@ const closePopupButton = document.querySelectorAll('.popup__close');
 
 editButton.addEventListener('click', () => openPopup(popupEdit));
 createButton.addEventListener('click', () => openPopup(popupCreate));
-imagesOfCard.forEach((image) => {
-  image.addEventListener('click', () => openPopup(popupImage));
-});
 closePopupButton.forEach((button) => {
   button.addEventListener('click', () => closePopup(button.closest('.popup')))
 });
@@ -37,6 +34,7 @@ function openImage(cardItem) {
   popupImage.querySelector('.popup__image').src = cardItem.link;
   popupImage.querySelector('.popup__image').alt = cardItem.name;
   popupImage.querySelector('.popup__caption').textContent = cardItem.name;
+  openPopup(popupImage);
 };
 
 const nameInput = document.querySelector('.popup__input_type_name');
