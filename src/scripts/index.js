@@ -7,7 +7,8 @@
 import '../pages/index.css';
 import { initialCards } from './places.js';
 import { createCard, likeCard, deleteCard } from './card.js';
-import { nameInput, jobInput, profileTitle, profileDescription, openPopup, closePopup } from './modal.js'
+import { openPopup, closePopup } from './modal.js';
+import { validationSettings, clearValidation } from './validation.js';
 
 initialCards.forEach((cardItem) => {
   const card = createCard(cardItem, openImage, likeCard, deleteCard);
@@ -21,94 +22,112 @@ const popupCreate = document.querySelector('.popup_type_new-card');
 const createButton = document.querySelector('.profile__add-button');
 const closePopupButton = document.querySelectorAll('.popup__close');
 
-editButton.addEventListener('click', () => openPopup(popupEdit, true));
+const nameInput = document.querySelector('.popup__input_type_name');
+const jobInput = document.querySelector('.popup__input_type_description');
+const profileTitle = document.querySelector('.profile__title');
+const profileDescription = document.querySelector('.profile__description');
+
+function fillUserData() {
+  const currentUserName = profileTitle.textContent;
+  const currentUserJob = profileDescription.textContent;
+
+  nameInput.value = currentUserName;
+  jobInput.value = currentUserJob;
+}
+
+editButton.addEventListener('click', () => {
+  openPopup(popupEdit);
+  clearValidation(popupEdit, validationSettings);
+  fillUserData();
+});
 createButton.addEventListener('click', () => openPopup(popupCreate));
 closePopupButton.forEach((button) => {
   button.addEventListener('click', () => closePopup(button.closest('.popup')))
 });
 
-function openImage(cardItem) {
+function openImage(cardItem, validationSettings) {
   const popupImage = document.querySelector('.popup_type_image');
   popupImage.querySelector('.popup__image').src = cardItem.link;
   popupImage.querySelector('.popup__image').alt = cardItem.name;
   popupImage.querySelector('.popup__caption').textContent = cardItem.name;
-  openPopup(popupImage);
+  openPopup(popupImage, false, validationSettings);
 };
 
-function disableButton(form) {
-  const popupButton = form.querySelector('.popup__button');
-  popupButton.classList.add('popup__button-inactive');
+function disableButton(form, validationSettings) {
+  const popupButton = form.querySelector(validationSettings.submitButtonClass);
+  popupButton.classList.add(validationSettings.inactiveButtonClass);
   popupButton.setAttribute('disabled', 'disabled');
 }
 
-function enableButton(form) {
-  const popupButton = form.querySelector('.popup__button');
-  popupButton.classList.remove('popup__button-inactive');
+function enableButton(form, validationSettings) {
+  const popupButton = form.querySelector(validationSettings.submitButtonClass);
+  popupButton.classList.remove(validationSettings.inactiveButtonClass);
   popupButton.removeAttribute('disabled');
 }
 
-function checkFormValidity(form) {
-  const inputList = Array.from(form.querySelectorAll('.popup__input'));
+function checkFormValidity(form, validationSettings) {
+  const inputList = Array.from(form.querySelectorAll(validationSettings.inputClass));
   const validForm = inputList.every(input => input.validity.valid);
 
   if (validForm) {
-    enableButton(form)
+    enableButton(form, validationSettings)
   } else {
-    disableButton(form)
+    disableButton(form, validationSettings)
   }
 }
 
-function showInputError(form, input, errorMessage) {
+function showInputError(form, input, errorMessage, validationSettings) {
   const errorElement = form.querySelector(`.${input.id}-error`);
   errorElement.textContent = errorMessage;
-  errorElement.classList.add('popup__input-error_active');
-  input.classList.add('popup__input-invalid');
+  errorElement.classList.add(validationSettings.errorClass);
+  input.classList.add(validationSettings.inputErrorClass);
 }
 
-function hideInputError(form, input) {
+function hideInputError(form, input, validationSettings) {
   const errorElement = form.querySelector(`.${input.id}-error`);
-  errorElement.classList.remove('popup__input-error_active');
+  errorElement.classList.remove(validationSettings.errorClass);
   errorElement.textContent = '';
-  input.classList.remove('popup__input-invalid');
+  input.classList.remove(validationSettings.inputErrorClass);
 }
 
-function isValid(form, input) {
+function isValid(form, input, validationSettings) {
   if (input.validity.patternMismatch) {
     input.setCustomValidity(input.dataset.errorMessage)
   } else if (input.validity.valueMissing) {
     input.setCustomValidity('Вы пропустили это поле.')
+  } else if (input.validity.typeMismatch) {
+    input.setCustomValidity('Введите адрес сайта.')
   } else {
     input.setCustomValidity('')
   }
 
   if (!input.validity.valid) {
-    showInputError(form, input, input.validationMessage);
+    showInputError(form, input, input.validationMessage, validationSettings);
   } else {
-    hideInputError(form, input);
+    hideInputError(form, input, validationSettings);
   }
 
-  checkFormValidity(form);
+  checkFormValidity(form, validationSettings);
 }
 
-function setEventListenersOnInput(form) {
-  const inputList = Array.from(form.querySelectorAll('.popup__input'));
+function setEventListenersOnInput(form, validationSettings) {
+  const inputList = Array.from(form.querySelectorAll(validationSettings.inputClass));
   inputList.forEach((input) => {
-    input.addEventListener('input', () => isValid(form, input))
+    input.addEventListener('input', () => isValid(form, input, validationSettings))
   })
 }
 
-function enableValidation() {
-  const popupFormList = Array.from(document.querySelectorAll('.popup__form'));
+function enableValidation(validationSettings) {
+  const popupFormList = Array.from(document.querySelectorAll(validationSettings.formClass));
   popupFormList.forEach((form) => {
     form.addEventListener('submit', (evt) => {
       evt.preventDefault()
     })
-    setEventListenersOnInput(form);
+    setEventListenersOnInput(form, validationSettings);
   })
-  
 }
 
-enableValidation();
+enableValidation(validationSettings);
 
 function handleFormSubmitUser(evt) {
   evt.preventDefault();
@@ -124,9 +143,9 @@ function handleFormSubmitUser(evt) {
 }
 
 const userFormElement = document.forms['edit-profile'];
-disableButton(userFormElement);
+disableButton(userFormElement, validationSettings);
 const cardFormElement = document.forms['new-place'];
-disableButton(cardFormElement);
+disableButton(cardFormElement, validationSettings);
 const titleInput = document.querySelector('.popup__input_type_card-name');
 const linkInput = document.querySelector('.popup__input_type_url');
 
@@ -149,8 +168,8 @@ function handleFormSubmitCard(evt) {
     }
   
     addNewCard(newCard);
-  
-    cardFormElement.reset();
+
+    clearValidation(activePopup, validationSettings)
     
     closePopup(activePopup);
   }
@@ -158,3 +177,26 @@ function handleFormSubmitCard(evt) {
 
 userFormElement.addEventListener('submit', handleFormSubmitUser); 
 cardFormElement.addEventListener('submit', handleFormSubmitCard); 
+
+
+const fetchSettings = {
+  url: 'https://mesto.nomoreparties.co/v1/wff-cohort-11',
+  headers: {
+    authorization: '8eef8a7b-16fa-42a1-80e9-e1a5157a1c81',
+    'Content-Type': 'application/json'
+  }
+}
+
+function getUserData() {
+  fetch(`${fetchSettings.url}/users/me`, {
+    method: 'GET',
+    headers: fetchSettings.headers
+  })
+    .then(res => res.json())
+    .then((result) => {
+      console.log(result)
+    })
+}
+
+
+getUserData();
