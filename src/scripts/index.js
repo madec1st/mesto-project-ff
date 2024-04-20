@@ -16,8 +16,6 @@ const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
 const profileAvatar = document.querySelector('.profile__image');
 const cardsContainer = document.querySelector('.places__list');
-const currentUserName = profileTitle.textContent;
-const currentUserJob = profileDescription.textContent;
 
 const editButton = document.querySelector('.profile__edit-button');
 const popupEdit = document.querySelector('.popup_type_edit');
@@ -53,7 +51,6 @@ Promise.all([getUserData(), getCards()])
       const card = createCard(cardItem, openImage, likeCard, deleteCard);
       cardsContainer.append(card); 
     })
-
     return userId
   })
   .catch((err) => {
@@ -61,6 +58,8 @@ Promise.all([getUserData(), getCards()])
   });
 
 function fillUserData() {
+  const currentUserName = profileTitle.textContent;
+  const currentUserJob = profileDescription.textContent;
   nameInput.value = currentUserName;
   jobInput.value = currentUserJob;
 }
