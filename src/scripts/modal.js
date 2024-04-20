@@ -15,9 +15,8 @@ function closePopup(popup) {
 };
 
 function closeBySpaceAround(evt) {
-  const activePopup = document.querySelector('.popup_is-opened');
-  if (activePopup === evt.target) { 
-    closePopup(activePopup);
+  if (evt.target.classList.contains('popup_is-opened')) { 
+    closePopup(evt.target);
   }
 };
 

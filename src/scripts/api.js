@@ -1,3 +1,5 @@
+import { checkResponse } from "./utils"
+
 const fetchSettings = {
   url: 'https://mesto.nomoreparties.co/v1/wff-cohort-11',
   headers: {
@@ -11,15 +13,7 @@ function getUserData() {
     method: 'GET',
     headers: fetchSettings.headers
   })
-    .then(res => {
-      if (res.ok) {
-        return res.json()
-      }
-      return Promise.reject(`Произошла ошибка при получении данных пользователя: ${res.status}`)
-    })
-    .catch((err) => {
-      console.log(err)
-    })
+    .then(checkResponse)
 }
 
 function editProfile(nameInput, jobInput) {
@@ -31,15 +25,7 @@ function editProfile(nameInput, jobInput) {
       about: jobInput.value
     }),
   })
-    .then(res => {
-      if (res.ok) {
-        return res.json()
-      }
-      return Promise.reject(`Произошла ошибка при изменении данных пользователя: ${res.status}`)
-    })
-    .catch((err) => {
-      console.log(err)
-    })
+    .then(checkResponse)
 }
 
 function getCards() {
@@ -47,15 +33,7 @@ function getCards() {
     method: 'GET',
     headers: fetchSettings.headers
   })
-    .then(res => {
-      if (res.ok) {
-        return res.json()
-      }
-      return Promise.reject(`Произошла ошибка при получении данных карточек: ${res.status}`)
-    })
-    .catch((err) => {
-      console.log(err)
-    })
+    .then(checkResponse)
 }
 
 function postCard(titleInput, linkInput) {
@@ -67,15 +45,7 @@ function postCard(titleInput, linkInput) {
       link: linkInput.value
     })
   })
-    .then(res => {
-      if (res.ok) {
-        return res.json()
-      }
-      return Promise.reject(`Произошла ошибка при добавлении карточки: ${res.status}`)
-    })
-    .catch((err) => {
-      console.log(err)
-    })
+    .then(checkResponse)
 }
 
 function deleteCardById(cardID) {
@@ -83,32 +53,15 @@ function deleteCardById(cardID) {
     method: 'DELETE',
     headers: fetchSettings.headers
   })
-    .then(res => {
-      if (res.ok) {
-        return res.json()
-      }
-      return Promise.reject(`Произошла ошибка при удалении карточки: ${res.status}`)
-    })
-    .catch((err) => {
-      console.log(err)
-    })
+    .then(checkResponse)
 }
-
 
 function setLike(cardID) {
   return fetch(`${fetchSettings.url}/cards/likes/${cardID}`, {
     method: 'PUT',
     headers: fetchSettings.headers
   })
-    .then(res => {
-      if (res.ok) {
-        return res.json()
-      }
-      return Promise.reject(`Произошла ошибка при постановке лайка: ${res.status}`)
-    })
-    .catch((err) => {
-      console.log(err)
-    })
+    .then(checkResponse)
 }
 
 function removeLike(cardID) {
@@ -116,15 +69,7 @@ function removeLike(cardID) {
     method: 'DELETE',
     headers: fetchSettings.headers
   })
-    .then(res => {
-      if (res.ok) {
-        return res.json()
-      }
-      return Promise.reject(`Произошла ошибка при удалении лайка: ${res.status}`)
-    })
-    .catch((err) => {
-      console.log(err)
-    })
+    .then(checkResponse)
 }
 
 function changeAvatar(linkInput) {
@@ -135,16 +80,7 @@ function changeAvatar(linkInput) {
       avatar: linkInput.value
     })
   })
-    .then(res => {
-      if (res.ok) {
-        return res.json()
-        
-      }
-      return Promise.reject(`Произошла ошибка при смене аватара: ${res.status}`)
-    })
-    .catch((err) => {
-      console.log(err)
-    })
+    .then(checkResponse)
 }
 
 export { getUserData, editProfile, getCards, postCard, deleteCardById, setLike, removeLike, changeAvatar }

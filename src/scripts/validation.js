@@ -49,9 +49,9 @@ function isValid(form, input, validationSettings) {
   if (input.validity.patternMismatch) {
     input.setCustomValidity(input.dataset.errorMessage)
   } else if (input.validity.valueMissing) {
-    input.setCustomValidity('Вы пропустили это поле.')
+    input.setCustomValidity(input.dataset.skipMessage)
   } else if (input.validity.typeMismatch) {
-    input.setCustomValidity('Введите адрес сайта.')
+    input.setCustomValidity(input.dataset.errorMessage)
   } else {
     input.setCustomValidity('')
   }
@@ -85,19 +85,13 @@ function enableValidation(validationSettings) {
 function clearValidation(popup, validationSettings) {
   const form = popup.querySelector(validationSettings.formClass);
   const inputList = Array.from(form.querySelectorAll(validationSettings.inputClass));
-  const errorElements = Array.from(form.querySelectorAll(`.${validationSettings.errorSpanClass}`));
 
   if (form) {
     form.reset()
   }
 
   inputList.forEach((input) => {
-    input.classList.remove(validationSettings.inputErrorClass);
-  })
-  
-  errorElements.forEach((error) => {
-    error.classList.remove(validationSettings.errorClass);
-    error.textContent = '';
+    hideInputError(form, input, validationSettings);
   })
 }
 
