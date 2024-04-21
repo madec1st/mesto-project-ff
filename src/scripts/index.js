@@ -30,6 +30,8 @@ const popupChangeAvatar = document.querySelector('.popup_type_change-avatar')
 const changeAvatarFormElement = document.forms['change-avatar']
 
 const popupImage = document.querySelector('.popup_type_image');
+const pictureElement = popupImage.querySelector('.popup__image');
+const captionElement = popupImage.querySelector('.popup__caption');
 
 const closePopupButton = document.querySelectorAll('.popup__close');
 
@@ -48,7 +50,7 @@ Promise.all([getUserData(), getCards()])
     profileAvatar.src = userData.avatar;
     
     cardsData.forEach((cardItem) => {
-      const card = createCard(cardItem, openImage, likeCard, deleteCard);
+      const card = createCard(cardItem, openImage, likeCard, deleteCard, userId);
       cardsContainer.append(card); 
     })
     return userId
@@ -88,9 +90,9 @@ closePopupButton.forEach((button) => {
 });
 
 function openImage(cardItem) {
-  popupImage.querySelector('.popup__image').src = cardItem.link;
-  popupImage.querySelector('.popup__image').alt = cardItem.name;
-  popupImage.querySelector('.popup__caption').textContent = cardItem.name;
+  pictureElement.src = cardItem.link;
+  pictureElement.alt = cardItem.name;
+  captionElement.textContent = cardItem.name;
   openPopup(popupImage);
 };
 
@@ -138,28 +140,7 @@ function handleFormSubmitCard(evt) {
       newCard._id = cardData._id;
       
       const addNewCard = (newCard) => {
-        const card = createCard(newCard, openImage, likeCard, deleteCard);
-        const deleteButton = card.querySelector('.card__delete-button');
-        const likeButton = card.querySelector('.card__like-button');
-        const likesQuantity = card.querySelector('.quantity_likes');
-        const likesValue = newCard.likes ? newCard.likes.length : 0;
-        let isLiked = newCard.likes ? newCard.likes.some(like => like._id === userId) : false;
-
-        if (isLiked) {
-          likeButton.classList.add('card__like-button_is-active'); 
-        } else { 
-          likeButton.classList.remove('card__like-button_is-active');
-        }
-
-        likesQuantity.textContent = likesValue;
-
-        deleteButton.addEventListener('click', () => deleteCard(newCard._id, card));  
-
-        likeButton.addEventListener('click', () => {
-          likeCard(isLiked, newCard._id, likeButton, likesQuantity);
-          isLiked = !isLiked;
-        })
-
+        const card = createCard(newCard, openImage, likeCard, deleteCard, userId);
         cardsContainer.prepend(card);
       }
 
@@ -199,5 +180,3 @@ function handleFormChangeAvatar(evt) {
 userFormElement.addEventListener('submit', handleFormSubmitUser); 
 cardFormElement.addEventListener('submit', handleFormSubmitCard); 
 changeAvatarFormElement.addEventListener('submit', handleFormChangeAvatar);
-
-export { userId }

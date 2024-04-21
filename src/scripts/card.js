@@ -1,9 +1,8 @@
 import { deleteCardById, setLike, removeLike } from './api.js';
-import { userId } from './index.js'
 
 const cardTemplate = document.querySelector('#card-template').content;
 
-const createCard = (cardItem, openImage, likeCard, deleteCard) => {
+const createCard = (cardItem, openImage, likeCard, deleteCard, userId) => {
   const card = cardTemplate.querySelector('.card').cloneNode(true);
   const cardImage = card.querySelector('.card__image');
   const cardId = cardItem._id;
@@ -33,15 +32,14 @@ const createCard = (cardItem, openImage, likeCard, deleteCard) => {
   }
 
   likeButton.addEventListener('click', () => {
-    likeCard(isLiked, cardId, likeButton, likesQuantity);
-    isLiked = !isLiked;
+    likeCard(cardId, likeButton, likesQuantity);
   });
 
   return card
 };
 
-function likeCard(isLiked, cardId, likeButton, likesQuantity) {
-  if (isLiked) {
+function likeCard(cardId, likeButton, likesQuantity) {
+  if (likeButton.classList.contains('card__like-button_is-active')) {
     removeLike(cardId)
       .then((cardData) => {
         const newLikesValue = cardData.likes.length
